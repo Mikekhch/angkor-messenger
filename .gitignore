@@ -1,0 +1,14 @@
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+.gradle/
+**/.gradle/
+.idea/
+**/.idea/
+*.apk
+*.log
+*.sqlite
+*.db
