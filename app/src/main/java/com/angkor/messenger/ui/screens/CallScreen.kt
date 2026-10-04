@@ -1,6 +1,7 @@
 package com.angkor.messenger.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,12 +11,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.angkor.messenger.model.User
 import com.angkor.messenger.socket.SocketManager
+import com.angkor.messenger.ui.theme.*
 
 @Composable
 fun CallScreen(
@@ -26,25 +29,26 @@ fun CallScreen(
 ) {
     var isMuted by remember { mutableStateOf(false) }
     var isCameraOff by remember { mutableStateOf(false) }
-    var callStatus by remember { mutableStateOf("Connected (00:15)") }
+    var callStatus by remember { mutableStateOf("Encrypted Stream • 00:15") }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF090D16))
+            .background(SurfaceBackground)
     ) {
         // Video Preview Background
         if (callType == "video" && !isCameraOff) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFF1E293B)),
+                    .background(SurfaceContainerHigh),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "📹 Live High-Definition Video Feed",
-                    color = Color(0xFF64748B),
-                    fontSize = 16.sp,
+                    text = "📹 Encrypted HD Video Feed (Kyber-1024)",
+                    color = TextSecondary,
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily.Monospace,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -63,13 +67,16 @@ fun CallScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(top = 48.dp)
             ) {
-                Box(modifier = Modifier.size(100.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(96.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, SecondaryCyan, CircleShape)
+                ) {
                     AsyncImage(
                         model = peerUser.avatar,
                         contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape)
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
@@ -77,15 +84,16 @@ fun CallScreen(
 
                 Text(
                     text = peerUser.name,
-                    fontSize = 24.sp,
+                    fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = OnSurfacePrimary
                 )
 
                 Text(
-                    text = if (callType == "video") "Angkor Video Call • $callStatus" else "Angkor Voice Call • $callStatus",
-                    fontSize = 14.sp,
-                    color = Color(0xFF94A3B8),
+                    text = if (callType == "video") "Cipher E2EE Video • $callStatus" else "Cipher E2EE Voice • $callStatus",
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = TertiaryEmerald,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
@@ -95,7 +103,9 @@ fun CallScreen(
                 horizontalArrangement = Arrangement.spacedBy(24.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .background(Color(0xFF0F172A).copy(alpha = 0.9f), RoundedCornerShape(32.dp))
+                    .clip(RoundedCornerShape(32.dp))
+                    .background(SurfaceContainerLow.copy(alpha = 0.95f))
+                    .border(1.dp, BorderSubtle, RoundedCornerShape(32.dp))
                     .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
                 // Mute Mic Button
@@ -103,9 +113,9 @@ fun CallScreen(
                     onClick = { isMuted = !isMuted },
                     modifier = Modifier
                         .size(56.dp)
-                        .background(if (isMuted) Color(0xFFEF4444) else Color(0xFF334155), CircleShape)
+                        .background(if (isMuted) DestructiveRed else SurfaceElevated, CircleShape)
                 ) {
-                    Text(text = if (isMuted) "🔇" else "🎙️", fontSize = 22.sp)
+                    Text(text = if (isMuted) "🔇" else "🎙️", fontSize = 20.sp)
                 }
 
                 // Camera Toggle (for video calls)
@@ -114,9 +124,9 @@ fun CallScreen(
                         onClick = { isCameraOff = !isCameraOff },
                         modifier = Modifier
                             .size(56.dp)
-                            .background(if (isCameraOff) Color(0xFFEF4444) else Color(0xFF334155), CircleShape)
+                            .background(if (isCameraOff) DestructiveRed else SurfaceElevated, CircleShape)
                     ) {
-                        Text(text = if (isCameraOff) "📷❌" else "📹", fontSize = 22.sp)
+                        Text(text = if (isCameraOff) "📷❌" else "📹", fontSize = 20.sp)
                     }
                 }
 
@@ -128,9 +138,9 @@ fun CallScreen(
                     },
                     modifier = Modifier
                         .size(56.dp)
-                        .background(Color(0xFFE11D48), CircleShape)
+                        .background(DestructiveRed, CircleShape)
                 ) {
-                    Text(text = "🛑", fontSize = 22.sp)
+                    Text(text = "🛑", fontSize = 20.sp)
                 }
             }
         }

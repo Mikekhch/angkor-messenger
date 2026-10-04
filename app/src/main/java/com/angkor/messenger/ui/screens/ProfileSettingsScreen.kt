@@ -1,6 +1,7 @@
 package com.angkor.messenger.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,6 +20,7 @@ import com.angkor.messenger.model.FeatureFlags
 import com.angkor.messenger.model.UpdateSettingsRequest
 import com.angkor.messenger.model.User
 import com.angkor.messenger.network.NetworkClient
+import com.angkor.messenger.ui.theme.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +49,7 @@ fun ProfileSettingsScreen(
                     )
                 )
                 if (res.isSuccessful && res.body()?.success == true) {
-                    statusMessage = "Settings updated successfully"
+                    statusMessage = "Security settings updated successfully"
                 }
             } catch (e: Exception) {
                 statusMessage = "Failed to update settings"
@@ -60,37 +63,39 @@ fun ProfileSettingsScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = onBack) {
-                            Text(text = "⬅️", fontSize = 18.sp)
+                            Text(text = "⬅️", fontSize = 16.sp)
                         }
                         Text(
-                            text = "Profile & Security",
+                            text = "Security & Identity",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = OnSurfacePrimary
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0F172A))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = SurfaceContainer)
             )
         },
-        containerColor = Color(0xFF0F172A)
+        containerColor = SurfaceBackground
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // User Header Profile Card
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF1E293B), RoundedCornerShape(20.dp))
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(SurfaceContainer)
+                    .border(1.dp, BorderSubtle, RoundedCornerShape(16.dp))
                     .padding(16.dp)
             ) {
-                Box(modifier = Modifier.size(60.dp)) {
+                Box(modifier = Modifier.size(56.dp)) {
                     AsyncImage(
                         model = currentUser.avatar,
                         contentDescription = null,
@@ -103,21 +108,22 @@ fun ProfileSettingsScreen(
                 Column {
                     Text(
                         text = currentUser.name,
-                        fontSize = 18.sp,
+                        fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = OnSurfacePrimary
                     )
                     Text(
                         text = currentUser.email,
                         fontSize = 12.sp,
-                        color = Color(0xFF94A3B8)
+                        color = TextSecondary
                     )
                     Text(
-                        text = "Auth: ${currentUser.authProvider.uppercase()}",
+                        text = "IDENTITY VERIFIED • ${currentUser.authProvider.uppercase()}",
                         fontSize = 10.sp,
+                        fontFamily = FontFamily.Monospace,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE11D48),
-                        modifier = Modifier.padding(top = 2.dp)
+                        color = SecondaryCyan,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }
@@ -126,7 +132,7 @@ fun ProfileSettingsScreen(
                 Text(
                     text = msg,
                     fontSize = 13.sp,
-                    color = Color(0xFF10B981),
+                    color = TertiaryEmerald,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -135,7 +141,9 @@ fun ProfileSettingsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF1E293B), RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(SurfaceContainer)
+                    .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
                 Row(
@@ -144,8 +152,8 @@ fun ProfileSettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text(text = "Active Status", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                        Text(text = "Show when you're online to contacts", fontSize = 12.sp, color = Color(0xFF94A3B8))
+                        Text(text = "Peer Presence Status", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = OnSurfacePrimary)
+                        Text(text = "Broadcast online presence to network peers", fontSize = 11.sp, color = TextSecondary)
                     }
                     Switch(
                         checked = isActiveOnline,
@@ -153,7 +161,7 @@ fun ProfileSettingsScreen(
                             isActiveOnline = it
                             saveSettings()
                         },
-                        colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF10B981))
+                        colors = SwitchDefaults.colors(checkedThumbColor = TertiaryEmerald)
                     )
                 }
             }
@@ -162,7 +170,9 @@ fun ProfileSettingsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF1E293B), RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(SurfaceContainer)
+                    .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
                 Row(
@@ -171,8 +181,8 @@ fun ProfileSettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text(text = "Biometric Authentication", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                        Text(text = "Use Fingerprint or Face ID to unlock", fontSize = 12.sp, color = Color(0xFF94A3B8))
+                        Text(text = "Biometric Lock", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = OnSurfacePrimary)
+                        Text(text = "Require Fingerprint / Face ID for vault access", fontSize = 11.sp, color = TextSecondary)
                     }
                     Switch(
                         checked = biometricEnabled,
@@ -180,7 +190,7 @@ fun ProfileSettingsScreen(
                             biometricEnabled = it
                             saveSettings()
                         },
-                        colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFFE11D48))
+                        colors = SwitchDefaults.colors(checkedThumbColor = PrimaryElectricBlue)
                     )
                 }
             }
@@ -189,11 +199,13 @@ fun ProfileSettingsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF1E293B), RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(SurfaceContainer)
+                    .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
-                Text(text = "Security PIN Code", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                Text(text = "Change 4-digit passcode for app entry", fontSize = 12.sp, color = Color(0xFF94A3B8))
+                Text(text = "Security Key Code", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = OnSurfacePrimary)
+                Text(text = "4-digit cryptographic fallback entry key", fontSize = 11.sp, color = TextSecondary)
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -206,17 +218,17 @@ fun ProfileSettingsScreen(
                         value = newPinCode,
                         onValueChange = { if (it.length <= 4) newPinCode = it },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
+                            focusedTextColor = OnSurfacePrimary,
+                            unfocusedTextColor = OnSurfacePrimary
                         ),
                         modifier = Modifier.weight(1f)
                     )
 
                     Button(
                         onClick = { saveSettings() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE11D48))
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryElectricBlue)
                     ) {
-                        Text(text = "Update PIN")
+                        Text(text = "Update Key")
                     }
                 }
             }
@@ -225,25 +237,30 @@ fun ProfileSettingsScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF1E293B), RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(SurfaceContainer)
+                    .border(1.dp, BorderSubtle, RoundedCornerShape(12.dp))
                     .padding(16.dp)
             ) {
-                Text(text = "Admin Dynamic Remote Capabilities", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(text = "Dynamic Feature Control", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = OnSurfacePrimary)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "• Voice Calling: ${if (featureFlags.voice_calling) "ENABLED ✅" else "DISABLED ❌"}",
-                    fontSize = 12.sp,
-                    color = Color(0xFF94A3B8)
+                    text = "• Voice Calling: ${if (featureFlags.voice_calling) "ACTIVE" else "RESTRICTED"}",
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = if (featureFlags.voice_calling) TertiaryEmerald else DestructiveRed
                 )
                 Text(
-                    text = "• Video Calling: ${if (featureFlags.video_calling) "ENABLED ✅" else "DISABLED ❌"}",
-                    fontSize = 12.sp,
-                    color = Color(0xFF94A3B8)
+                    text = "• Video Calling: ${if (featureFlags.video_calling) "ACTIVE" else "RESTRICTED"}",
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = if (featureFlags.video_calling) TertiaryEmerald else DestructiveRed
                 )
                 Text(
-                    text = "• File Sharing: ${if (featureFlags.file_sharing) "ENABLED ✅" else "DISABLED ❌"}",
-                    fontSize = 12.sp,
-                    color = Color(0xFF94A3B8)
+                    text = "• File Sharing: ${if (featureFlags.file_sharing) "ACTIVE" else "RESTRICTED"}",
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = if (featureFlags.file_sharing) TertiaryEmerald else DestructiveRed
                 )
             }
 
@@ -253,11 +270,11 @@ fun ProfileSettingsScreen(
                 onClick = onLogout,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF334155))
+                    .height(48.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = SurfaceElevated)
             ) {
-                Text(text = "Log Out", color = Color.White, fontWeight = FontWeight.Bold)
+                Text(text = "Revoke Session & Log Out", color = DestructiveRed, fontWeight = FontWeight.Bold)
             }
         }
     }

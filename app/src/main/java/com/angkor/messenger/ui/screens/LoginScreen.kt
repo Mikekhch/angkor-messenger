@@ -1,14 +1,18 @@
 package com.angkor.messenger.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -16,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.angkor.messenger.model.User
 import com.angkor.messenger.network.NetworkClient
 import com.angkor.messenger.model.LoginRequest
+import com.angkor.messenger.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -25,16 +30,13 @@ fun LoginScreen(
     val coroutineScope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var activeTab by remember { mutableStateOf("biometric") } // "biometric" or "credentials"
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF0F172A), Color(0xFF1E1B4B))
-                )
-            )
-            .padding(24.dp),
+            .background(SurfaceBackground)
+            .padding(horizontal = 20.dp, vertical = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -42,46 +44,107 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Logo Badge
+            // Hero Shield Logo
             Box(
                 modifier = Modifier
-                    .size(90.dp)
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(Color(0xFFE11D48), Color(0xFF2563EB))
-                        ),
-                        shape = RoundedCornerShape(24.dp)
-                    ),
+                    .size(72.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(SurfaceContainerHigh)
+                    .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(20.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "🇰🇭",
-                    fontSize = 42.sp
+                    text = "🛡️",
+                    fontSize = 36.sp
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Cipher",
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = OnSurfacePrimary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(SecondaryCyan.copy(alpha = 0.2f))
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = "v2.4 E2EE",
+                        color = SecondaryCyan,
+                        fontSize = 10.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
 
             Text(
-                text = "Angkor Messenger",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
-
-            Text(
-                text = "Secure Real-Time Messaging & Calls",
-                fontSize = 14.sp,
-                color = Color(0xFF94A3B8),
+                text = "End-to-End Encrypted Communication",
+                fontSize = 13.sp,
+                color = TextSecondary,
                 modifier = Modifier.padding(top = 4.dp)
             )
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(28.dp))
+
+            // Mode Selector Tabs (Quick Unlock vs Account Sign In)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(SurfaceContainerLow)
+                    .padding(4.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (activeTab == "biometric") SurfaceContainer else Color.Transparent)
+                        .clickable { activeTab = "biometric" }
+                        .padding(vertical = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "⚡ Quick Unlock",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (activeTab == "biometric") SecondaryCyan else TextSecondary
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (activeTab == "credentials") SurfaceContainer else Color.Transparent)
+                        .clickable { activeTab = "credentials" }
+                        .padding(vertical = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "🔑 Account Sign In",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (activeTab == "credentials") SecondaryCyan else TextSecondary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
 
             errorMessage?.let { err ->
                 Text(
                     text = err,
-                    color = Color(0xFFEF4444),
+                    color = DestructiveRed,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 16.dp)
@@ -117,24 +180,19 @@ fun LoginScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(54.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                    .height(50.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryElectricBlue)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Sign in with Google",
-                        color = Color(0xFF0F172A),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
+                Text(
+                    text = "Sign in with Google",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp
+                )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Apple Sign-In Button
             Button(
@@ -165,26 +223,21 @@ fun LoginScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(54.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B))
+                    .height(50.dp),
+                shape = RoundedCornerShape(24.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = SurfaceElevated)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Sign in with Apple",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
-                    )
-                }
+                Text(
+                    text = "Sign in with Apple",
+                    color = OnSurfacePrimary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp
+                )
             }
 
             if (isLoading) {
-                Spacer(modifier = Modifier.height(24.dp))
-                CircularProgressIndicator(color = Color(0xFFE11D48))
+                Spacer(modifier = Modifier.height(20.dp))
+                CircularProgressIndicator(color = SecondaryCyan)
             }
         }
     }
