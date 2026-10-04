@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.angkor.messenger.model.User
 import com.angkor.messenger.model.VerifyPinRequest
 import com.angkor.messenger.network.NetworkClient
+import com.angkor.messenger.ui.theme.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,7 +41,7 @@ fun PinAuthScreen(
                 if (res.isSuccessful && res.body()?.success == true) {
                     onPinSuccess()
                 } else {
-                    errorMessage = "Incorrect PIN code. Try again."
+                    errorMessage = "Incorrect Security Key. Try again."
                     pinInput = ""
                 }
             } catch (e: Exception) {
@@ -67,7 +68,7 @@ fun PinAuthScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0F172A))
+            .background(SurfaceBackground)
             .padding(24.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -77,16 +78,16 @@ fun PinAuthScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Enter Security PIN",
+                text = "Enter Security Key",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = OnSurfacePrimary
             )
 
             Text(
-                text = "Welcome back, ${user.name}",
-                fontSize = 14.sp,
-                color = Color(0xFF94A3B8),
+                text = "Session lock for ${user.name}",
+                fontSize = 13.sp,
+                color = TextSecondary,
                 modifier = Modifier.padding(top = 4.dp)
             )
 
@@ -101,21 +102,21 @@ fun PinAuthScreen(
                     val isFilled = i < pinInput.length
                     Box(
                         modifier = Modifier
-                            .size(18.dp)
+                            .size(16.dp)
                             .background(
-                                color = if (isFilled) Color(0xFFE11D48) else Color(0xFF334155),
+                                color = if (isFilled) SecondaryCyan else SurfaceContainerHighest,
                                 shape = CircleShape
                             )
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             errorMessage?.let { err ->
                 Text(
                     text = err,
-                    color = Color(0xFFEF4444),
+                    color = DestructiveRed,
                     fontSize = 13.sp,
                     textAlign = TextAlign.Center
                 )
@@ -123,7 +124,7 @@ fun PinAuthScreen(
             }
 
             if (isLoading) {
-                CircularProgressIndicator(color = Color(0xFFE11D48))
+                CircularProgressIndicator(color = SecondaryCyan)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -148,10 +149,10 @@ fun PinAuthScreen(
                         for (key in row) {
                             Button(
                                 onClick = { handleKeyPress(key) },
-                                modifier = Modifier.size(70.dp),
+                                modifier = Modifier.size(68.dp),
                                 shape = CircleShape,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (key == "BIO" || key == "DEL") Color(0xFF1E293B) else Color(0xFF1E293B)
+                                    containerColor = SurfaceElevated
                                 )
                             ) {
                                 Text(
@@ -162,7 +163,7 @@ fun PinAuthScreen(
                                     },
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = OnSurfacePrimary
                                 )
                             }
                         }
